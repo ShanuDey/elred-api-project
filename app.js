@@ -104,4 +104,29 @@ app.get("/task", auth, (req, res) => {
   res.status(200).send("Task");
 });
 
+app.post("/createtask", auth, async (req, res) => {
+  try {
+    // get the task string from the request
+    const { task } = req.body;
+    const { email } = req.user;
+
+    // check if the task is present
+    if (!task) {
+      res.status(400).send("Task string is not present in the request");
+    }
+
+    // add new task to the task array
+    const user = await User.findOneAndUpdate(
+      { email },
+      { $push: { tasks: { task } } },
+      { new: true } // it will help to return the user data after update
+    );
+
+    // respond with the user with the all tasks
+    res.status(200).send(user);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 module.exports = app;
