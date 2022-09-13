@@ -62,4 +62,41 @@ app.post("/register", async (req, res) => {
   }
 });
 
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // check the inputs are present
+    if (!(email && password)) {
+      res.status(400).send("All fields are not present");
+    }
+
+    // find the user with the email from database
+    const user = await User.findOne({ email });
+
+    // check if user present with this email and password
+    if (user && (await bycrypt.compare(password, user.password))) {
+      // create jwt token for this user
+      const token = jwt.sign(
+        { user_id: user._id, email },
+        process.env.TOKEN_KEY,
+        {
+          expiresIn: "30s",
+        }
+      );
+
+      // add this token to the user
+      user.token = token;
+
+      // respond with the complete user details
+      res.status(200).send(user);
+    } else {
+      // if user not found with these credentials
+      res.status(400).send("Failed to login with these credentials");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 module.exports = app;
