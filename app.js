@@ -4,6 +4,7 @@ const express = require("express");
 const bycrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("./model/user");
+const auth = require("./middleware/auth");
 
 const app = express();
 app.use(express.json());
@@ -97,6 +98,10 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
+});
+
+app.get("/task", auth, (req, res) => {
+  res.status(200).send("Task");
 });
 
 module.exports = app;
