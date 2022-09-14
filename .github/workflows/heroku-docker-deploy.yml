@@ -3,7 +3,7 @@ name: Deploy docker container to heroku
 # Run workflow on every push to master branch.
 on:
   push:
-    branches: [ci]
+    branches: [master]
 
 # Your workflows jobs.
 jobs:
