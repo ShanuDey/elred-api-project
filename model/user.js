@@ -1,5 +1,10 @@
 const mongoose = require("mongoose");
-const Task = require("./task");
+
+const TaskSchema = mongoose.Schema({
+  date: {type:Date, default: Date.now},
+  task: String,
+  completed: {type:Boolean, default: false}
+});
 
 const UserSchema = mongoose.Schema({
   first_name: String,
@@ -7,7 +12,7 @@ const UserSchema = mongoose.Schema({
   email: { type: String, unique: true },
   password: String,
   token: String,
-  tasks: [Task.schema]
+  tasks: [TaskSchema]
 });
 
 module.exports = mongoose.model("User", UserSchema);
