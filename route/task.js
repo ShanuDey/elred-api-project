@@ -37,7 +37,7 @@ router.post("/create", auth, async (req, res) => {
     );
 
     // respond with the user with the all tasks
-    res.status(200).send(user);
+    res.status(200).send(user.tasks);
   } catch (error) {
     console.error(error);
   }
