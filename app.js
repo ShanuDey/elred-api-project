@@ -67,14 +67,16 @@ app.post("/register", async (req, res) => {
     user.token = token;
 
     // send verification email
-    const emailVerificationLink = `${process.env.HOST_NAME}:${process.env.PORT}/verify/${user._id}/${email_verification_token}`;
+    const { HOST_NAME, PORT, HEROKU } = process.env;
+    const base_url = HEROKU ? HOST_NAME : HOST_NAME + ":" + PORT;
+    const emailVerificationLink = `${base_url}/verify/${user._id}/${email_verification_token}`;
     const email_preview_link = await sendVerificationEmail(
       email,
       emailVerificationLink
     );
 
     // respond with the complete user details
-    res.status(200).send({user, email_preview_link});
+    res.status(200).send({ user, email_preview_link });
   } catch (error) {
     console.error(error);
   }
