@@ -129,4 +129,39 @@ app.post("/createtask", auth, async (req, res) => {
   }
 });
 
+app.patch("/task/:id", auth, async (req, res) => {
+  try {
+    // get the inputs from the request
+    const task_id = req.params.id;
+    const { email } = req.user;
+    const { date, task, completed } = req.body;
+
+    // create the update query dynamically depending on the inputs present
+    let updatedTaskQuery = {};
+    if (date) updatedTaskQuery["tasks.$[task].date"] = date;
+    if (task) updatedTaskQuery["tasks.$[task].task"] = task;
+    if (completed) updatedTaskQuery["tasks.$[task].completed"] = completed;
+
+    // check if the task_id is present
+    if (!task_id) {
+      res.status(400).send("Task id is not present in the request");
+    }
+
+    // update the task with the available inputs
+    const user = await User.findOneAndUpdate(
+      { email },
+      { $set: updatedTaskQuery },
+      {
+        arrayFilters: [{ "task._id": task_id }],
+        new: true,
+      }
+    );
+
+    // respond with the user with the all tasks
+    res.status(200).send(user.tasks);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 module.exports = app;
