@@ -100,8 +100,19 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/task", auth, (req, res) => {
-  res.status(200).send("Task");
+app.get("/task", auth, async (req, res) => {
+  try {
+    // get the authenticated user email from the request
+    const { email } = req.user;
+
+    // fetch the user from the database
+    const user = await User.findOne({ email });
+
+    // respond with the available tasks
+    res.status(200).send(user.tasks);
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 app.post("/createtask", auth, async (req, res) => {
@@ -178,7 +189,7 @@ app.delete("/task/:id", auth, async (req, res) => {
     );
 
     // respond with the updated task list
-    res.status(200).send(user.tasks)
+    res.status(200).send(user.tasks);
   } catch (error) {
     console.error(error);
   }
