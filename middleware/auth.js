@@ -15,7 +15,7 @@ const verifyToken = (req, res, next) => {
     req.user = decodedPayload
   }
   catch{
-    return res.status(401).send("Token is not valid");
+    return res.status(401).send("Invalid session token !! Please login again");
   }
   return next();
 }
