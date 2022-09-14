@@ -164,4 +164,24 @@ app.patch("/task/:id", auth, async (req, res) => {
   }
 });
 
+app.delete("/task/:id", auth, async (req, res) => {
+  try {
+    // get the inputs from the request
+    const task_id = req.params.id;
+    const { email } = req.user;
+
+    // delete the task from the tasks array in database
+    const user = await User.findOneAndUpdate(
+      { email },
+      { $pull: { tasks: { _id: task_id } } },
+      { new: true }
+    );
+
+    // respond with the updated task list
+    res.status(200).send(user.tasks)
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 module.exports = app;
