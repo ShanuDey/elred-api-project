@@ -12,6 +12,8 @@ const UserSchema = mongoose.Schema({
   email: { type: String, unique: true },
   password: String,
   token: String,
+  verified: {type:Boolean, default: false},
+  email_verification_token: String,
   tasks: [TaskSchema]
 });
 
