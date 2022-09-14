@@ -51,7 +51,7 @@ app.post("/register", async (req, res) => {
       last_name,
       email: email.toLowerCase(),
       password: encryptedPassword,
-      email_verification_token
+      email_verification_token,
     });
 
     // create jwt token for this user
@@ -96,7 +96,8 @@ app.post("/login", async (req, res) => {
     // check if user present with this email and password
     if (user && (await bycrypt.compare(password, user.password))) {
       // check if email verification is completed
-      if(!user.verified) return res.status(401).send("Email verification required !!");
+      if (!user.verified)
+        return res.status(401).send("Email verification required !!");
 
       // create jwt token for this user
       const token = jwt.sign(

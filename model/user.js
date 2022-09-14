@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const TaskSchema = mongoose.Schema({
-  date: {type:Date, default: Date.now},
+  date: { type: Date, default: Date.now },
   task: String,
-  completed: {type:Boolean, default: false}
+  completed: { type: Boolean, default: false },
 });
 
 const UserSchema = mongoose.Schema({
@@ -12,9 +12,9 @@ const UserSchema = mongoose.Schema({
   email: { type: String, unique: true },
   password: String,
   token: String,
-  verified: {type:Boolean, default: false},
+  verified: { type: Boolean, default: false },
   email_verification_token: String,
-  tasks: [TaskSchema]
+  tasks: [TaskSchema],
 });
 
 module.exports = mongoose.model("User", UserSchema);
