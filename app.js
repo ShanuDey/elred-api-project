@@ -72,10 +72,9 @@ app.post("/register", async (req, res) => {
       email,
       emailVerificationLink
     );
-    user.email_preview_link = email_preview_link;
 
     // respond with the complete user details
-    res.status(200).send(user);
+    res.status(200).send({user, email_preview_link});
   } catch (error) {
     console.error(error);
   }
