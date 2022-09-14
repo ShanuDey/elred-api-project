@@ -10,6 +10,7 @@
 
 ## Usage
 
+ - Postman Collection - https://www.getpostman.com/collections/70acf33c7cb9c5725fac
  - Base URL 
 	 - Heroku Hosted - https://elred-api-project.herokuapp.com/
 	 - Localhost - http://localhost:8000/
