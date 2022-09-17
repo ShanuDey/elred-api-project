@@ -26,7 +26,9 @@ router.post("/create", auth, async (req, res) => {
 
     // find the user from the database
     const user = await User.findOne({ email });
+    // push the new task object to the tasks array
     await user.tasks.push({date, task, status});
+    // save the changed to the user document
     const updatedUser = await user.save();
 
     // respond with the user with the all tasks
@@ -46,31 +48,27 @@ router.patch("/:id", auth, async (req, res) => {
     const { email } = req.user;
     const { date, task, status } = req.body;
 
-    // create the update query dynamically depending on the inputs present
-    let updatedTaskQuery = {};
-    if (date) updatedTaskQuery["tasks.$[task].date"] = new Date(date);
-    if (task) updatedTaskQuery["tasks.$[task].task"] = task;
-    if (status) updatedTaskQuery["tasks.$[task].status"] = status;
-
     // check if the task_id is present
     if (!task_id) {
       res.status(400).send("Task id is not present in the request");
     }
 
-    // update the task with the available inputs
-    const user = await User.findOneAndUpdate(
-      { email },
-      { $set: updatedTaskQuery },
-      {
-        arrayFilters: [{ "task._id": task_id }],
-        new: true,
-      }
-    );
+    // find the user from the database
+    const user = await User.findOne({ email });
+    // update the requested fields
+    if (date)  user.tasks.id(task_id).date = new Date(date);
+    if (task)  user.tasks.id(task_id).task = task;
+    if (status)  user.tasks.id(task_id).status = status;
+    // save the changed to the user document
+    const updatedUser = await user.save();
 
     // respond with the user with the all tasks
-    res.status(200).send(user.tasks);
+    res.status(200).send(updatedUser.tasks);
   } catch (error) {
     console.error(error);
+    if (error.name === "ValidationError") {
+      res.status(400).send("Invalid Request !! " + error.message.split(":").pop());
+    }
   }
 });
 
