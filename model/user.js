@@ -1,9 +1,18 @@
 const mongoose = require("mongoose");
 
 const TaskSchema = mongoose.Schema({
-  date: { type: Date, default: Date.now },
-  task: String,
-  completed: { type: Boolean, default: false },
+  date: {
+    type: Date,
+    required: [true, "date is required !!"],
+  },
+  task: {
+    type: String,
+    required: [true, "task string is required !!"],
+  },
+  completed: {
+    type: Boolean,
+    required: [true, "completed status is required !!"],
+  },
 });
 
 const UserSchema = mongoose.Schema({
