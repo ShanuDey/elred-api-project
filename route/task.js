@@ -15,6 +15,7 @@ router.get("/", auth, async (req, res) => {
     res.status(200).send(user.tasks);
   } catch (error) {
     console.error(error);
+    res.status(500).send("Something went wrong !!");
   }
 });
 
@@ -37,6 +38,8 @@ router.post("/create", auth, async (req, res) => {
     console.error(error);
     if (error.name === "ValidationError") {
       res.status(400).send("Invalid Request !! " + error.message.split(":").pop());
+    }else{
+      res.status(500).send("Something went wrong !!");
     }
   }
 });
@@ -68,6 +71,8 @@ router.patch("/:id", auth, async (req, res) => {
     console.error(error);
     if (error.name === "ValidationError") {
       res.status(400).send("Invalid Request !! " + error.message.split(":").pop());
+    }else{
+      res.status(500).send("Something went wrong !!");
     }
   }
 });
@@ -89,6 +94,7 @@ router.delete("/:id", auth, async (req, res) => {
     res.status(200).send(user.tasks);
   } catch (error) {
     console.error(error);
+    res.status(500).send("Something went wrong !!");
   }
 });
 
