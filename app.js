@@ -79,6 +79,7 @@ app.post("/register", async (req, res) => {
     res.status(200).send({ user, email_preview_link });
   } catch (error) {
     console.error(error);
+    res.status(500).send("Something went wrong !!");
   }
 });
 
@@ -120,6 +121,7 @@ app.post("/login", async (req, res) => {
     }
   } catch (error) {
     console.error(error);
+    res.status(500).send("Something went wrong !!");
   }
 });
 
