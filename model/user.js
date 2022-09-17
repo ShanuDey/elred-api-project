@@ -10,8 +10,12 @@ const TaskSchema = mongoose.Schema({
     required: [true, "task is required !!"],
   },
   status: {
-    type: Boolean,
+    type: String,
     required: [true, "status is required !!"],
+    validate: {
+      validator: (value) => /^(Completed|Incomplete)$/.test(value),
+      message: "status can only be Completed or Incomplete",
+    },
   },
 });
 
