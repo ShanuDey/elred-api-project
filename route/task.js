@@ -21,12 +21,12 @@ router.get("/", auth, async (req, res) => {
 router.post("/create", auth, async (req, res) => {
   try {
     // get the task string from the request
-    const { date, task, completed } = req.body;
+    const { date, task, status } = req.body;
     const { email } = req.user;
 
     // find the user from the database
     const user = await User.findOne({ email });
-    await user.tasks.push({date, task, completed});
+    await user.tasks.push({date, task, status});
     const updatedUser = await user.save();
 
     // respond with the user with the all tasks
@@ -44,13 +44,13 @@ router.patch("/:id", auth, async (req, res) => {
     // get the inputs from the request
     const task_id = req.params.id;
     const { email } = req.user;
-    const { date, task, completed } = req.body;
+    const { date, task, status } = req.body;
 
     // create the update query dynamically depending on the inputs present
     let updatedTaskQuery = {};
     if (date) updatedTaskQuery["tasks.$[task].date"] = new Date(date);
     if (task) updatedTaskQuery["tasks.$[task].task"] = task;
-    if (completed) updatedTaskQuery["tasks.$[task].completed"] = completed;
+    if (status) updatedTaskQuery["tasks.$[task].status"] = status;
 
     // check if the task_id is present
     if (!task_id) {

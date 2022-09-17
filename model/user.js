@@ -7,11 +7,11 @@ const TaskSchema = mongoose.Schema({
   },
   task: {
     type: String,
-    required: [true, "task string is required !!"],
+    required: [true, "task is required !!"],
   },
-  completed: {
+  status: {
     type: Boolean,
-    required: [true, "completed status is required !!"],
+    required: [true, "status is required !!"],
   },
 });
 
