@@ -4,6 +4,8 @@ const express = require("express");
 const bycrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("./model/user");
+const Token = require("./model/token");
+const auth = require("./middleware/auth");
 const taskRouter = require("./route/task");
 const randomstring = require("randomstring");
 const { sendVerificationEmail } = require("./config/mailer");
@@ -54,18 +56,6 @@ app.post("/register", async (req, res) => {
       email_verification_token,
     });
 
-    // create jwt token for this user
-    const token = jwt.sign(
-      { user_id: user._id, email },
-      process.env.TOKEN_KEY,
-      {
-        expiresIn: "30s",
-      }
-    );
-
-    // add this token to the user
-    user.token = token;
-
     // send verification email
     const { HOST_NAME, PORT, HEROKU } = process.env;
     const base_url = HEROKU ? HOST_NAME : HOST_NAME + ":" + PORT;
@@ -111,10 +101,10 @@ app.post("/login", async (req, res) => {
       );
 
       // add this token to the user
-      user.token = token;
+      const userToken = await Token.create({ token });
 
       // respond with the complete user details
-      res.status(200).send(user);
+      res.status(200).send({ user, userToken });
     } else {
       // if user not found with these credentials
       res.status(400).send("Failed to login with these credentials");
@@ -136,6 +126,27 @@ app.get("/verify/:userid/:token", async (req, res) => {
     res.status(200).send("Email Verification successful !!");
   } else {
     res.status(400).send("Failed to verify email !! Invalid token");
+  }
+});
+
+app.get("/logout", auth, async (req, res) => {
+  try {
+    // get the token from the request
+    const token =
+      req.body.token || req.query.token || req.headers["x-access-token"];
+
+    // delete the token from the Database
+    const deletedToken = await Token.deleteOne({ token });
+
+    // respond to the user after successful logout
+    res
+      .status(200)
+      .send(
+        `Logout ${deletedToken.deletedCount === 1 ? "Successful" : "Failed"}`
+      );
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Something went wrong !!");
   }
 });
 
