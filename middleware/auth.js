@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
+const Token = require('../model/token');
 
-const verifyToken = (req, res, next) => {
+const verifyToken = async (req, res, next) => {
   // get the token from the request
   const token = req.body.token || req.query.token || req.headers['x-access-token'];
   
@@ -11,8 +12,9 @@ const verifyToken = (req, res, next) => {
 
   // verify the token with the key
   try{
-    const decodedPayload = jwt.verify(token, process.env.TOKEN_KEY);
-    req.user = decodedPayload
+    const userToken = await Token.findOne({token});
+    const decodedPayload = jwt.verify(userToken.token, process.env.TOKEN_KEY);
+    req.user = decodedPayload;
   }
   catch{
     return res.status(401).send("Invalid session token !! Please login again");
