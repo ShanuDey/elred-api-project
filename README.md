@@ -18,7 +18,7 @@
 	- [Optional] [Create a test create email with one click](https://ethereal.email)
 		- if you are using test email then you will receive a preview email from the response
 		- click on the preview email link and verify email from there
- - Login with `email` and `password` POST request body json parameters to `/login` route 
+ - Login with `email` and `password` POST request body json paramaters to `/login` route 
 	 - Example - https://elred-api-project.herokuapp.com/login
  - Create a task as authenticated user with `task`, `date` and `status` POST request body json parameters to `/task/create` route
 	 - Example - https://elred-api-project.herokuapp.com/task/create
@@ -29,5 +29,7 @@
 	 - Example - https://elred-api-project.herokuapp.com/task/:TASK_ID
  -  Delete a task as authenticated user with DELETE request to `/task/:id` route
 	 - Example - https://elred-api-project.herokuapp.com/task/:TASK_ID
+ - Logout with GET request to `/logout` route
+	 - Example - https://elred-api-project.herokuapp.com/logout
 
 ### Feel free to put a start or raise an issue
