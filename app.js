@@ -1,6 +1,7 @@
 require("dotenv").config();
 require("./config/database").connect();
 const express = require("express");
+const cors = require("cors");
 const bycrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("./model/user");
@@ -11,6 +12,23 @@ const randomstring = require("randomstring");
 const { sendVerificationEmail } = require("./config/mailer");
 
 const app = express();
+// get whitelisted domains string from .env file
+const whitelistDomainsFromEnv = process.env.WHITELIST_DOMAINS || "";
+// make a array of url from the string splitting by ","
+const whitelist = whitelistDomainsFromEnv.split(",").map(domain => domain.trim());
+// create cors options
+const corsOptions = {
+  origin: (origin, callback) => {
+    // check if request origin is present in whitelist
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Request is not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/task", taskRouter);
 
