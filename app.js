@@ -15,7 +15,9 @@ const app = express();
 // get whitelisted domains string from .env file
 const whitelistDomainsFromEnv = process.env.WHITELIST_DOMAINS || "";
 // make a array of url from the string splitting by ","
-const whitelist = whitelistDomainsFromEnv.split(",").map(domain => domain.trim());
+const whitelist = whitelistDomainsFromEnv
+  .split(",")
+  .map((domain) => domain.trim());
 // create cors options
 const corsOptions = {
   origin: (origin, callback) => {
@@ -46,17 +48,18 @@ app.post("/register", async (req, res) => {
 
     // check if the inputs are present
     if (!(first_name && last_name && email && password)) {
-      res.status(400).send("All fields are not present");
+      res.status(400).json({ error: "All fields are not present" });
+      return;
     }
 
     // check if the user is already present in our database
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res
-        .status(409)
-        .send(
-          "This email is already registered. Please login with this email."
-        );
+      res.status(409).json({
+        error:
+          "This email is already registered. Please login with this email.",
+      });
+      return;
     }
 
     // Encrypt password to store in DB
@@ -69,7 +72,7 @@ app.post("/register", async (req, res) => {
     const user = await User.create({
       first_name,
       last_name,
-      email: email.toLowerCase(),
+      email,
       password: encryptedPassword,
       email_verification_token,
     });
@@ -84,10 +87,10 @@ app.post("/register", async (req, res) => {
     );
 
     // respond with the complete user details
-    res.status(200).send({ user, email_preview_link });
+    res.status(200).json({ user, email_preview_link });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Something went wrong !!");
+    res.status(500).json("Something went wrong !!");
   }
 });
 
@@ -97,7 +100,8 @@ app.post("/login", async (req, res) => {
 
     // check the inputs are present
     if (!(email && password)) {
-      res.status(400).send("All fields are not present");
+      res.status(400).json({ error: "All fields are not present" });
+      return;
     }
 
     // find the user with the email from database
@@ -107,14 +111,16 @@ app.post("/login", async (req, res) => {
     if (user && (await bycrypt.compare(password, user.password))) {
       // check if email verification is completed
       if (!user.verified)
-        return res.status(401).send("Email verification required !!");
+        return res
+          .status(401)
+          .json({ error: "Email verification required !!" });
 
       // create jwt token for this user
       const token = jwt.sign(
         { user_id: user._id, email },
         process.env.TOKEN_KEY,
         {
-          expiresIn: "30s",
+          expiresIn: "2h",
         }
       );
 
@@ -122,14 +128,14 @@ app.post("/login", async (req, res) => {
       const userToken = await Token.create({ token });
 
       // respond with the complete user details
-      res.status(200).send({ user, userToken });
+      res.status(200).json({ user, userToken });
     } else {
       // if user not found with these credentials
-      res.status(400).send("Failed to login with these credentials");
+      res.status(400).json({ error: "Failed to login with these credentials" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send("Something went wrong !!");
+    res.status(500).json({ error: "Something went wrong !!" });
   }
 });
 
@@ -141,9 +147,9 @@ app.get("/verify/:userid/:token", async (req, res) => {
     await User.findOneAndUpdate({ _id: userid }, { $set: { verified: true } });
 
     // respond verification successful
-    res.status(200).send("Email Verification successful !!");
+    res.status(200).json({ error: "Email Verification successful !!" });
   } else {
-    res.status(400).send("Failed to verify email !! Invalid token");
+    res.status(400).json({ error: "Failed to verify email !! Invalid token" });
   }
 });
 
@@ -157,14 +163,14 @@ app.get("/logout", auth, async (req, res) => {
     const deletedToken = await Token.deleteOne({ token });
 
     // respond to the user after successful logout
-    res
-      .status(200)
-      .send(
-        `Logout ${deletedToken.deletedCount === 1 ? "Successful" : "Failed"}`
-      );
+    res.status(200).json({
+      error: `Logout ${
+        deletedToken.deletedCount === 1 ? "Successful" : "Failed"
+      }`,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Something went wrong !!");
+    res.status(500).json({ error: "Something went wrong !!" });
   }
 });
 
